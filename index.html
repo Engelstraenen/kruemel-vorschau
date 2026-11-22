@@ -252,7 +252,7 @@ footer a{margin-right:18px}
  nav.open .burger span{background-color:transparent}
  nav.open .burger span::before{transform:translateY(7px) rotate(45deg)}
  nav.open .burger span::after{transform:translateY(-7px) rotate(-45deg)}
- nav ul{display:flex;flex-direction:column;gap:0;position:absolute;left:0;right:0;top:100%;padding:4px max(5vw,env(safe-area-inset-right)) 16px max(5vw,env(safe-area-inset-left));background:rgba(20,33,61,.98);box-shadow:0 22px 30px rgba(0,0,0,.28);opacity:0;visibility:hidden;transform:translateY(-10px);transition:opacity .2s,transform .2s,visibility 0s .2s}
+ nav ul{display:flex;flex-direction:column;gap:0;position:absolute;left:0;right:0;top:100%;padding:4px max(5vw,env(safe-area-inset-right)) 16px max(5vw,env(safe-area-inset-left));background:var(--navy);box-shadow:0 22px 30px rgba(0,0,0,.28);opacity:0;visibility:hidden;transform:translateY(-10px);transition:opacity .2s,transform .2s,visibility 0s .2s}
  nav.open ul{opacity:1;visibility:visible;transform:none;transition:opacity .2s,transform .2s}
  nav ul a{display:flex;align-items:center;min-height:52px;font-size:20px;opacity:1;border-bottom:1px solid rgba(255,246,236,.12)}
  nav ul li:last-child a{border-bottom:0}
@@ -292,6 +292,47 @@ footer a{margin-right:18px}
  .chips{position:relative;flex-wrap:nowrap;overflow-x:auto;overscroll-behavior-x:contain;scrollbar-width:none;margin-left:-5vw;margin-right:-5vw;padding:0 5vw 2px;scroll-padding:0 5vw}
  .chips::-webkit-scrollbar{display:none}
  .chips button{flex:none}
+}
+@media (max-width:860px) and (orientation:portrait) and (max-height:620px){
+ /* kleine Smartphones (z. B. iPhone SE mit eingeblendeten Leisten): Szenen kompakter */
+ section{padding-top:80px}
+ h1{font-size:42px}
+ h2{font-size:32px}
+ .lead{font-size:16px;margin-top:12px}
+ .eyebrow{margin-bottom:14px}
+ #hero .pigwrap{max-width:min(260px,26vh);max-width:min(260px,26svh)}
+ .counter{font-size:46px;margin-top:16px!important}
+ #catchPig{max-width:min(300px,30vh);max-width:min(300px,30svh)}
+ #grow .steps{height:120px}
+ .step big{font-size:36px}.step span{font-size:17px}
+ #growPig{max-width:min(300px,34vh);max-width:min(300px,34svh);margin-top:calc(min(300px,34vh)*-.17);margin-top:calc(min(300px,34svh)*-.17)}
+ .rcopy{top:80px}
+ .rcopy .rstep p{font-size:30px}
+ .rcopy .rstep small{font-size:17px}
+}
+@media (max-width:860px) and (orientation:landscape) and (max-height:500px){
+ /* Smartphone quer: zweispaltig wie am Desktop, damit die gepinnten Szenen in die geringe Höhe passen */
+ section{padding-top:78px;padding-bottom:28px}
+ .split{grid-template-columns:1.1fr .9fr;gap:4vw;align-items:center}
+ h2{font-size:clamp(28px,4.4vw,36px)}
+ .lead{font-size:16px;margin-top:12px}
+ .eyebrow{margin-bottom:12px}
+ #hero .pigwrap{max-width:min(260px,50vh);max-width:min(260px,50svh)}
+ #catchPig{max-width:min(300px,56vh);max-width:min(300px,56svh)}
+ .counter{font-size:44px;margin-top:16px!important}
+ #grow .steps{height:110px;margin-top:14px}
+ .step big{font-size:34px}.step span{font-size:16px}
+ #growPig{max-width:min(300px,64vh);max-width:min(300px,64svh);margin-top:0}
+ .rcopy{right:auto;width:44vw}
+ .rcopy .rstep p{font-size:30px}
+ .rcopy .rstep small{font-size:16px}
+ .rocketwrap{left:70%}
+ .film{max-width:calc((100vh - 60px)*16/9);max-width:calc((100svh - 60px)*16/9)}
+}
+@media (min-width:861px) and (max-width:1180px) and (pointer:coarse){
+ /* Tablet quer: Raketen-Text nicht unter die Rakete laufen lassen */
+ .rcopy{max-width:36vw}
+ .rcopy .rstep{width:36vw}
 }
 @media (pointer:coarse){
  #rain .coin::before{content:"";position:absolute;inset:-10px;border-radius:50%}
@@ -587,6 +628,8 @@ gsap.to('#bar',{scaleX:1,ease:'none',scrollTrigger:{start:0,end:'max',scrub:.2}}
   addEventListener('pointermove',e=>{if(COARSE&&e.pointerType!=='mouse')return;qx((e.clientX/innerWidth-.5)*-30);qy((e.clientY/innerHeight-.5)*-20)},{passive:true});
   /* Intro: Hero baut sich weich auf */
   gsap.from('#hero .eyebrow,#hero h1,#hero .lead,#hero .btn,#hero .hint',{y:46,opacity:0,duration:.9,ease:'power3.out',stagger:.1,delay:.1});
+  /* Smartphone/Tablet: der Hero-Button blieb nach dem Intro 46 px zu tief haengen und lag ueber dem Hinweis darunter (y-Endwert wurde als 46 gelesen). Hier explizit auf 0 fuehren; Desktop unveraendert. */
+  if(matchMedia('(max-width:860px)').matches)gsap.fromTo('#hero .btn',{y:46},{y:0,duration:.9,ease:'power3.out',delay:.4,overwrite:'auto'});
   gsap.from('#heroPig',{scale:.6,opacity:0,y:60,duration:1.1,ease:'back.out(1.6)',delay:.25});
  }
  const host=$('#heroPig'),pg=host.querySelector('.pig');pg.dataset.own=1;let clicks=0,flying=false;
@@ -852,7 +895,7 @@ function fatten(pg,k){
   squashT(p,t+2.55);mood(p,'grin',t+2.55);
   const chip=put(s,mk('fchip','+50 € gespart ✓'),{left:'270px',top:'305px'});tl.from(chip,{scale:0,rotation:-8,duration:.5,ease:'back.out(3)'},t+2.6);
   const lab=ft(s,'… danach<br>der Rest.',50,690,50,'#14213D',{lineHeight:'1.05'});tl.from(lab,{x:-60,opacity:0,duration:.5},t+3.3);
-  ['🍕','🛒','👟'].forEach((e,i)=>{const it=ft(s,e,330+i*120,690,92,'#000');tl.from(it,{y:-700,duration:.7,ease:'bounce.out'},t+3.6+i*.2)});
+  ['🍕','🛒','👟'].forEach((e,i)=>{const it=ft(s,e,330+i*120,690,92,'#000');tl.from(it,{y:-820,duration:.7,ease:'bounce.out'},t+3.6+i*.2)});
   cap(s,'Spar-Betrag am Gehaltstag per Dauerauftrag zur Seite legen.',t+.8);
  }
  /* 4 Kleinvieh */
@@ -873,7 +916,7 @@ function fatten(pg,k){
   const a=ft(s,'Der<br>Notgroschen.',50,50,90,'#14213D');tl.from(a,{y:90,opacity:0,duration:.7},t+.3);
   const b=ft(s,'Faustregel: ein Polster von<br>ca. 3 Monatsgehältern.',50,250,40,'#14213D',{lineHeight:'1.15'});tl.from(b,{y:50,opacity:0,duration:.6},t+.7);
   const um=put(s,mk('umb','<svg viewBox="0 0 440 270" width="440"><path d="M10 170 Q220 -90 430 170 Q395 140 360 170 Q325 140 290 170 Q255 140 220 170 Q185 140 150 170 Q115 140 80 170 Q45 140 10 170Z" fill="#FF6F9C" stroke="#14213D" stroke-width="8" stroke-linejoin="round"/><path d="M220 168 V240 q0 16 -16 16" stroke="#14213D" stroke-width="10" fill="none" stroke-linecap="round"/></svg>'),{left:'250px',top:'410px'});
-  tl.from(um,{y:-500,duration:.8,ease:'bounce.out'},t+.8);
+  tl.from(um,{y:-720,duration:.8,ease:'bounce.out'},t+.8);
   const p=fpig(s,'',345,590,240,'smirk');tl.from(p,{scale:0,transformOrigin:'50% 90%',duration:.5,ease:'back.out(2)'},t+.7);
   const L=['Waschmaschine kaputt','Zahnarzt','Autoreparatur','Handy kaputt','Reifen platt','Heizung streikt'];
   for(let i=0;i<10;i++){
@@ -1055,7 +1098,9 @@ function fatten(pg,k){
  });
  const tl=gsap.timeline({scrollTrigger:{trigger:'#space',start:'top top',end:'+=220%',pin:true,scrub:true,anticipatePin:1,invalidateOnRefresh:MOB}});
  /* Smartphone: Mond landet rechts unter dem Text statt hinter der weißen Schrift */
- const moonY=()=>{const m=$('#moon'),rc=$('.rcopy'),box=rs[0].parentNode,h=Math.max(...rs.map(r=>r.offsetHeight));return rc.offsetTop+box.offsetTop+h+24+m.offsetHeight*.125-m.offsetTop};
+ const moonY=()=>{const m=$('#moon'),rc=$('.rcopy'),box=rs[0].parentNode,h=Math.max(...rs.map(r=>r.offsetHeight));
+  if(m.offsetLeft>rc.offsetLeft+rc.offsetWidth)return innerHeight*.42; /* quer: Mond neben dem Text, Weg wie am Desktop */
+  return rc.offsetTop+box.offsetTop+h+24+m.offsetHeight*.125-m.offsetTop};
  tl.to('#night',{opacity:1,duration:2.4,ease:'none'},0)
    .to('#ground',{y:'70vh',duration:1.6,ease:'power1.in'},0)
    .to('#rocket',{y:'-14vh',duration:3,ease:'none'},0)
